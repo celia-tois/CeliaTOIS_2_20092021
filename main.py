@@ -2,10 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 
-
-def product_page(product_page_url, universal_product_code, title, price_including_tax, price_excluding_tax,
-                 number_available, product_description, category, review_rating, image_url):
-    url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+def product_page(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
     product_page_url = url
@@ -17,13 +14,12 @@ def product_page(product_page_url, universal_product_code, title, price_includin
     product_description = soup.find("article").find_all("p")[3].string
     category = soup.find(class_="breadcrumb").find_all("a")[2].string
     review_rating = soup.find_all("td")[6].string
-    image_url = soup.find(class_="item")("img")
-    print(image_url)
+    image_url = soup.find(class_="item")("img")[0].attrs["src"].replace("../../", "http://books.toscrape.com/")
 
     heading = ["product_page_url", "universal_product_code", "title", "price_including_tax", "price_excluding_tax",
                "number_available", "product_description", "category", "review_rating", "image_url"]
 
-    rows = [
+    product_info = [
         {"product_page_url": product_page_url,
          "universal_product_code": universal_product_code,
          "title": title,
@@ -36,8 +32,24 @@ def product_page(product_page_url, universal_product_code, title, price_includin
          "image_url": image_url}
     ]
 
-    print(rows)
-
-    with open("product.csv", "w", newline='') as product_csv:
+    with open("product.csv", "w") as product_csv:
         file_writer = csv.DictWriter(product_csv, fieldnames=heading)
-        file_writer.writerow(rows)
+        file_writer.writeheader()
+        for info in product_info:
+            file_writer.writerow(info)
+
+    return product_info
+
+
+def categories():
+    url = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+    page = requests.get(url)
+    print(page)
+    soup = BeautifulSoup(page.content, "html.parser")
+    book_url = soup.find_all(class_="image_container")
+    for book in book_url:
+        product = product_page(book.a["href"].replace("../../../", "http://books.toscrape.com/catalogue/"))
+        print(product)
+
+
+categories()
