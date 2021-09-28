@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 
+
 def product_page(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -16,8 +17,6 @@ def product_page(url):
     review_rating = soup.find_all("td")[6].string
     image_url = soup.find(class_="item")("img")[0].attrs["src"].replace("../../", "http://books.toscrape.com/")
 
-    heading = ["product_page_url", "universal_product_code", "title", "price_including_tax", "price_excluding_tax",
-               "number_available", "product_description", "category", "review_rating", "image_url"]
 
     product_info = [
         {"product_page_url": product_page_url,
@@ -32,24 +31,29 @@ def product_page(url):
          "image_url": image_url}
     ]
 
-    with open("product.csv", "w") as product_csv:
-        file_writer = csv.DictWriter(product_csv, fieldnames=heading)
-        file_writer.writeheader()
-        for info in product_info:
-            file_writer.writerow(info)
-
     return product_info
 
 
 def categories():
-    url = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+    url = "https://books.toscrape.com/catalogue/category/books/young-adult_21/index.html"
     page = requests.get(url)
-    print(page)
     soup = BeautifulSoup(page.content, "html.parser")
     book_url = soup.find_all(class_="image_container")
-    for book in book_url:
-        product = product_page(book.a["href"].replace("../../../", "http://books.toscrape.com/catalogue/"))
-        print(product)
+
+    heading = ["product_page_url", "universal_product_code", "title", "price_including_tax", "price_excluding_tax",
+               "number_available", "product_description", "category", "review_rating", "image_url"]
+
+    with open("product.csv", "w") as product_csv:
+        file_writer = csv.DictWriter(product_csv, fieldnames=heading)
+        file_writer.writeheader()
+        for book in book_url:
+            product = product_page(book.a["href"].replace("../../../", "http://books.toscrape.com/catalogue/"))
+            file_writer.writerows(product)
 
 
 categories()
+
+""" 
+for info in product_info:
+    file_writer.writerow(info)
+"""
