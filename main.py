@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import os
 
 
 def product_page(url):
@@ -62,6 +63,11 @@ def categories():
     soup = BeautifulSoup(page.content, "html.parser")
     category_url = soup.find_all(class_="nav-list")[0]("ul")[0]("li")
 
+    parent_directory = "/Users/celiatois/Documents/OpenClassrooms/python/CeliaTOIS_2_20092021"
+    parent_path = os.path.join(parent_directory, "Data")
+    os.mkdir(parent_path)
+    os.chdir(parent_path)
+
     for category in category_url:
         href = category.a["href"]
         link = "https://books.toscrape.com/" + href
@@ -76,7 +82,10 @@ def categories():
 
         name = "".join(category.a.string.split())
         csv_file_name = name + ".csv"
-
+        child_directory = parent_directory + "/Data"
+        child_path = os.path.join(child_directory, name)
+        os.mkdir(child_path)
+        os.chdir(child_path)
         with open(csv_file_name, "w"):
             books_per_category(link, csv_file_name, True)
 
