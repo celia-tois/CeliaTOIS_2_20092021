@@ -15,10 +15,10 @@ def product_page(url):
     number_available = soup.find_all("td")[5].string
     product_description = soup.find("article").find_all("p")[3].string
     category = soup.find(class_="breadcrumb").find_all("a")[2].string
-    review_rating = soup.find_all("td")[6].string
+    review_rating = soup.find(class_="star-rating").attrs["class"][1]
     image_url = soup.find(class_="item")("img")[0].attrs["src"].replace("../../", "http://books.toscrape.com/")
     image = requests.get(image_url).content
-    image_name = universal_product_code + ".jpg"
+    image_name = universal_product_code + "." + image_url.split(".")[-1]
     with open(image_name, "wb") as handler:
         handler.write(image)
 
@@ -67,7 +67,7 @@ def categories():
     soup = BeautifulSoup(page.content, "html.parser")
     category_url = soup.find_all(class_="nav-list")[0]("ul")[0]("li")
 
-    parent_directory = "/Users/celiatois/Documents/OpenClassrooms/python/CeliaTOIS_2_20092021"
+    parent_directory = os.getcwd()
     parent_path = os.path.join(parent_directory, "Data")
     if not os.path.exists(parent_path):
         os.mkdir(parent_path)
