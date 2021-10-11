@@ -3,13 +3,12 @@
 ## How to install my project
 
 1. Download the code file
-2. Open it in your text editor
-3. Open the Terminal
-4. Create the **virtual environment**:
+2. Open the Terminal
+3. Create the **virtual environment**:
     ```
     python -m venv env
     ```
-5. Activate the **virtual environment**:
+4. Activate the **virtual environment**:
    - on macOS:
      ```
      source env/bin/activate
@@ -18,7 +17,7 @@
      ```
      env/Scripts/activate
      ```
-6. Install the **packages**:
+5. Install the **packages**:
    ```
     pip install -r requirements.txt
    ```
