@@ -17,6 +17,10 @@ def product_page(url):
     category = soup.find(class_="breadcrumb").find_all("a")[2].string
     review_rating = soup.find_all("td")[6].string
     image_url = soup.find(class_="item")("img")[0].attrs["src"].replace("../../", "http://books.toscrape.com/")
+    image = requests.get(image_url).content
+    image_name = universal_product_code + ".jpg"
+    with open(image_name, "wb") as handler:
+        handler.write(image)
 
     product_info = [
         {"product_page_url": product_page_url,
@@ -65,7 +69,8 @@ def categories():
 
     parent_directory = "/Users/celiatois/Documents/OpenClassrooms/python/CeliaTOIS_2_20092021"
     parent_path = os.path.join(parent_directory, "Data")
-    os.mkdir(parent_path)
+    if not os.path.exists(parent_path):
+        os.mkdir(parent_path)
     os.chdir(parent_path)
 
     for category in category_url:
@@ -84,7 +89,8 @@ def categories():
         csv_file_name = name + ".csv"
         child_directory = parent_directory + "/Data"
         child_path = os.path.join(child_directory, name)
-        os.mkdir(child_path)
+        if not os.path.exists(child_path):
+            os.mkdir(child_path)
         os.chdir(child_path)
         with open(csv_file_name, "w"):
             books_per_category(link, csv_file_name, True)
